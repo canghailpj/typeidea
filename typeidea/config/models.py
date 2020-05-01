@@ -12,7 +12,8 @@ class Link(models.Model):
 
     title = models.CharField(max_length=50,verbose_name='标题')
     href = models.URLField(max_length=500,verbose_name='链接')
-    status = models.PositiveIntegerField(default=STATUS_NORMAL,choices=STATUS_ITEMS,verbose_name='状态')
+    status = models.PositiveIntegerField(default=STATUS_NORMAL,choices=STATUS_ITEMS,
+                                         verbose_name='状态')
     weight = models.PositiveIntegerField(default=1,choices=zip(range(1,6),range(1,6)),
                                          verbose_name='权重',
                                          help_text='权重高展示顺序靠前')

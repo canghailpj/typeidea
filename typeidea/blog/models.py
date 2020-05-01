@@ -19,6 +19,9 @@ class Category(models.Model):
     class Meta:
         verbose_name = verbose_name_plural = '分类'
 
+    def __str__(self):
+        return self.name
+
 
 class Tag(models.Model):
     STATUS_NORMAL = 1
@@ -36,6 +39,9 @@ class Tag(models.Model):
     class Meta:
         verbose_name = verbose_name_plural = '标签'
 
+    def __str__(self):
+        return self.name
+
 
 class Post(models.Model):
     STATUS_DRAFT = 2
@@ -52,10 +58,13 @@ class Post(models.Model):
     content = models.TextField('正文',help_text='正文必须未Markdown格式')
     status = models.PositiveIntegerField(default=STATUS_NORMAL,choices=STATUS_ITEMS,verbose_name='状态')
     category = models.ForeignKey(Category,on_delete=models.CASCADE,verbose_name='分类')
-    tag = models.ForeignKey(Tag,on_delete=models.CASCADE,verbose_name='标签')
+    tag = models.ManyToManyField(Tag,verbose_name='标签')
     owner = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name='作者')
     created_time = models.DateTimeField(auto_now_add=True,editable=False,verbose_name='创建时间')
 
     class Meta:
         verbose_name = verbose_name_plural = '文章'
         ordering = ['-id'] #根据id降序排列
+
+    def __str__(self):
+        return self.title
