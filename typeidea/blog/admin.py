@@ -1,29 +1,38 @@
 from django.contrib import admin
 from django.urls import reverse
-from .models import Category,Post,Tag
 from django.utils.html import format_html
+from django.contrib.admin.models import LogEntry
+from .models import Category,Post,Tag
+from .adminforms import PostAdminForm
+from typeidea.base_admin import BaseOwnerAdmin
+from typeidea.custom_site import custom_site
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+@admin.register(LogEntry,site=custom_site)
+class LogEntryAdmin(admin.ModelAdmin):
+    """
+    记录所有model的操作日志
+    """
+    list_display = ('object_repr','object_id','action_flag','user','change_message')
+
+
+class PostInline(admin.TabularInline):
+    fields = ('title','desc')
+    extra = 3  #默认显添加文章的个数
+    model = Post
+
+@admin.register(Category,site=custom_site)
+class CategoryAdmin(BaseOwnerAdmin):
+    inlines = [PostInline] #在分类页面直接编辑文章
     list_display = ('name','status','owner','created_time','is_nav')
     fields = ('name','status','is_nav')
 
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        # return super(CategoryAdmin,self).save_model(request,obj,form,change)
-        obj.save()
 
 
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
+@admin.register(Tag,site=custom_site)
+class TagAdmin(BaseOwnerAdmin):
     list_display = ('name','owner','status','created_time')
     fields = ('name','status')
 
-
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        # return super(CategoryAdmin,self).save_model(request,obj,form,change)
-        obj.save()
 
 
 class CategoryOwnerFilter(admin.SimpleListFilter):
@@ -45,8 +54,10 @@ class CategoryOwnerFilter(admin.SimpleListFilter):
         return queryset
 
 
-@admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
+@admin.register(Post,site=custom_site)
+class PostAdmin(BaseOwnerAdmin):
+    form = PostAdminForm
+
     def operator(self,obj):
         # # a = reverse('admin:blog_post_change',args=(obj.id))
         #
@@ -108,15 +119,6 @@ class PostAdmin(admin.ModelAdmin):
     # filter_vertical = ('tag',)   #多对多字段纵向展示
 
 
-
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        obj.save()
-
-
-    def get_queryset(self, request):
-        qs = self.model._default_manager.get_queryset()
-        return qs.filter(owner=request.user)
 
     #引入自定义资源
     class Media:

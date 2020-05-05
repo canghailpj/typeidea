@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'typeidea',
     'blog',
     'config',
     'comment',
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'typeidea.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'typeidea.templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
