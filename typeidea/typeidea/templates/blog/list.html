@@ -2,11 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Typeidea博客系统</title>
 </head>
 <body>
-<ul>
-</ul>
+<div>
+    顶部分类：
+    {% for nav in navs %}
+    <a href="/category/{{ nav.id }}">{{ nav.name }}</a>
+    {% endfor %}
+</div>
+{% if tag %}
+标签页：{{ tag.name }}
+{% endif %}
+
+{% if category %}
+分类页：{{ category.name }}
+{% endif %}
 <ul>
 {% for post in post_list %}
 <li>
@@ -17,8 +28,13 @@
     </div>
     <p>{{ post.desc }}</p>
 </li>
-
 {% endfor %}
 </ul>
+<div>
+    底部分类：
+    {% for nav in navs %}
+    <a href="/category/{{ nav.id }}">{{ nav.name }}</a>
+    {% endfor %}
+</div>
 </body>
 </html>
