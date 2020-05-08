@@ -78,6 +78,8 @@ class Post(models.Model):
     tag = models.ManyToManyField(Tag,verbose_name='标签')
     owner = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name='作者')
     created_time = models.DateTimeField(auto_now_add=True,editable=False,verbose_name='创建时间')
+    pv = models.PositiveIntegerField(default=1)
+    uv = models.PositiveIntegerField(default=1)
 
     class Meta:
         verbose_name = verbose_name_plural = '文章'
@@ -85,7 +87,6 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-
 
     @staticmethod
     def get_by_tag(tag_id):
@@ -115,5 +116,10 @@ class Post(models.Model):
     @classmethod
     def latest_posts(cls):
         return cls.objects.filter(status=cls.STATUS_NORMAL)
+
+    @classmethod
+    def hot_posts(cls):
+        """根据页面访问量查询文章"""
+        return cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
 
 
