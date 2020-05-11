@@ -1,0 +1,27 @@
+{% extends './base.html' %}
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block main %}
+{% if post %}
+<h1>{{ post.title }}</h1>
+<div>
+    <span>分类：{{ post.category.name }}</span>
+    <span>作者：{{ post.owner.username }}</span>
+</div>
+<hr/>
+<p>
+    {{ post.content }}
+</p>
+{% endif %}
+
+<hr/>
+<div class="comment">
+    <form>
+        {% csrf_token %}
+        {{ content_form }}
+        <input type="submit" value="写好了">
+    </form>
+</div>
+
+{% endblock %}
+

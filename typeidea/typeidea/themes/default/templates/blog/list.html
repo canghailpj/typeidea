@@ -1,0 +1,33 @@
+{% extends './base.html '%}
+
+{% block title %}
+    {% if tag %}
+    标签页：{{ tag.name }}
+    {% endif %}
+
+    {% if category %}
+    分类页：{{ category.name }}
+    {% endif %}
+{% endblock %}
+
+{% block main %}
+    <form action="{% url 'search' %}" method="GET">
+        <input type="search" name="keyword" value="{{ keyword }}" >
+        <button>搜索</button>
+    </form>
+    <ul>
+    {% for post in post_list %}
+    <li>
+        <a href="{% url 'post-detail' post.id %}">{{ post.title }}</a>
+        <br/>
+<!--        <div>-->
+<!--            <span>作者：{{ post.owner.username }}</span>-->
+<!--            <span>分类：{{ post.category.name }}</span>-->
+<!--        </div>-->
+        作者：<a href="{% url 'author' post.owner.id %}">{{ post.owner.username }}</a>
+        <span>分类：{{ post.category.name }}</span>
+        <p>{{ post.desc }}</p>
+    </li>
+    {% endfor %}
+    </ul>
+{% endblock %}
