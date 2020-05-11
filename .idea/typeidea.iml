@@ -6,7 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/typeidea/config" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/typeidea" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.8 (typeidea-env)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.8 (vir_env) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TestRunnerService">
