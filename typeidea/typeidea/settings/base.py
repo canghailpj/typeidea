@@ -42,8 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-
+from django.middleware.security import  SecurityMiddleware
 MIDDLEWARE = [
+    'blog.middleware.user_id.UserIDMiddleware', #生成用户id中间件
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -76,7 +77,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                "comment_block": "comment.templatetags.comment_block",
+            },
         },
+
     },
 ]
 

@@ -32,12 +32,17 @@ class CommentForm(forms.ModelForm):
         )
     )
     def clean_content(self):
+        import mistune #导入Markdown插件
         """对评论内容做校验"""
         content = self.cleaned_data.get('content')
+
+
         if len(content) < 10:
             raise forms.ValidationError('评论内容太短了！')
+
+        content = mistune.markdown(content)  # 保存数据之前进行格式化
         return content
 
     class Meta:
         model = Comment
-        fields = ['nickname','email','website','content']
+        fields = ['target','nickname','email','website','content']

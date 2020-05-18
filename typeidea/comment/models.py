@@ -26,3 +26,5 @@ class Comment(models.Model):
         return cls.objects.filter(target=target,status=cls.STATUS_NORMAL)
 
 
+
+

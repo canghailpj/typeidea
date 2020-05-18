@@ -74,7 +74,7 @@ class PostAdmin(BaseOwnerAdmin):
     operator.short_description = '操作'
 
     list_display = ['title', 'category', 'owner', 'status',
-                    'created_time', ]
+                    'created_time','pv','uv']
     list_display_links = ['title']
     # list_filter = ['category']
     list_filter = [CategoryOwnerFilter]
@@ -86,7 +86,7 @@ class PostAdmin(BaseOwnerAdmin):
     save_on_top = True
 
     # exclude = ('owner',)
-    #
+
     # fields = (
     #     ('category','title'),
     #     'desc',

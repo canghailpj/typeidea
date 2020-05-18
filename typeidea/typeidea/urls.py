@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,re_path
+from django.contrib.sitemaps import views as sitemap_views
 from .custom_site import custom_site
 from blog.views import (
     IndexView,CategoryView,
@@ -22,6 +23,9 @@ from blog.views import (
     SearchView,AuthorView,
 )
 from config.views import LinkListView
+from comment.views import CommentView
+from blog.rss import LatestPostFeed
+from blog.sitemap import PostSitemap
 
 
 
@@ -36,5 +40,8 @@ urlpatterns = [
     re_path(r'^tag/(?P<tag_id>\d+)/$',TagView.as_view(),name='tag-list'),
     re_path(r'^post/(?P<post_id>\d+).html$',PostDetailView.as_view(),name='post-detail'),
     re_path(r'^links/$',LinkListView.as_view(),name='links'),
+    re_path(r'^comment/$',CommentView.as_view(),name='comment'),
+    re_path(r'^rss|feed/',LatestPostFeed(),name='rss'),
+    re_path(r'^sitemap\.xml$',sitemap_views.sitemap,{'sitemaps':{'posts':PostSitemap}})
 
 ]

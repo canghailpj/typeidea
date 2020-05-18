@@ -1,8 +1,10 @@
+from datetime import date
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
-from django.db.models import Q
+from django.db.models import Q, F
+from django.core.cache import cache
 from .models import Post, Tag, Category
 from config.models import SideBar
 from comment.forms import CommentForm
@@ -70,6 +72,7 @@ class CommonViewMixin:
     """
     通用视图：分类导航、侧边栏、底部导航
     """
+
     def get_context_data(self, **kwargs):
         """通过重写此方法，返回额外的数据"""
         context = super().get_context_data(**kwargs)
@@ -87,8 +90,10 @@ class IndexView(CommonViewMixin, ListView):
     context_object_name = 'post_list'  # 传给模板中的对象名称
     template_name = 'blog/list.html'
 
+
 class CategoryView(IndexView):
     """分类视图"""
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)  # 获取公共视图中的sidebars数据
         category_id = self.kwargs.get('category_id')  # 获取请求中的参数
@@ -104,8 +109,10 @@ class CategoryView(IndexView):
         category_id = self.kwargs.get('category_id')
         return queryset.filter(category_id=category_id)
 
+
 class TagView(IndexView):
     """分类视图"""
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)  # 获取公共视图中的sidebars数据
         tag_id = self.kwargs.get('tag_id')  # 获取请求中的参数
@@ -128,14 +135,32 @@ class PostDetailView(CommonViewMixin, DetailView):
     context_object_name = 'post'
     pk_url_kwarg = 'post_id'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
-            'content_form': CommentForm,
-            'content_list':Comment.get_by_target(self.request.path)
-        }
-        )
-        return context
+    # PV、UV统计
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        self.handle_visited()
+        return response
+
+    def handle_visited(self):
+        increase_pv = False
+        increase_uv = False
+        uid = self.request.uid
+        pv_key = 'pv:%s:%s' % (uid, self.request.path)
+        uv_key = 'uv:%s:%s:%s' % (uid, str(date.today()), self.request.path)
+        if not cache.get(pv_key):
+            increase_pv = True
+            cache.set(pv_key, 1, 1 * 60)  # 1分钟有效
+
+        if not cache.get(uv_key):
+            increase_uv = True
+            cache.set(pv_key, 1, 24 * 60 * 60)  # 24小时有效
+
+        if increase_uv and increase_pv:
+            Post.objects.filter(pv=self.object.id).update(pv=F('pv') + 1, uv=F('uv') + 1)
+        elif increase_pv:
+            Post.objects.filter(pv=self.object.id).update(pv=F('pv') + 1)
+        elif increase_uv:
+            Post.objects.filter(pv=self.object.id).update(uv=F('uv') + 1)
 
 
 class SearchView(IndexView):
@@ -143,7 +168,7 @@ class SearchView(IndexView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'keyword':self.request.GET.get('keyword','')
+            'keyword': self.request.GET.get('keyword', '')
         })
         return context
 
@@ -157,8 +182,8 @@ class SearchView(IndexView):
 
 class AuthorView(IndexView):
     """作者页面"""
-    def get_queryset(self,**kwargs):
+
+    def get_queryset(self, **kwargs):
         querysert = super().get_queryset()
         owner_id = self.kwargs.get('owner_id')
         return querysert.filter(owner_id=owner_id)
-
